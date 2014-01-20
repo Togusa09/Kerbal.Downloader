@@ -18,7 +18,7 @@ namespace KerbalWinDownloader
         {
             
             _KerbalDirectory = kerbalDirectory;
-            Directory.SetCurrentDirectory(_KerbalDirectory);
+            //Directory.SetCurrentDirectory(_KerbalDirectory);
         }
 
         public string ProjectName

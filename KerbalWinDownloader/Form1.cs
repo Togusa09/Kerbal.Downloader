@@ -25,32 +25,26 @@ namespace KerbalWinDownloader
             InitializeComponent();
 
             
-
             var kerbalPath = ConfigurationManager.AppSettings.Get("kerbalInstallPath");
             var serverUrl = ConfigurationManager.AppSettings.Get("kerbalModServer");
             txtKerbalPath.Text = kerbalPath;
 
-            var modCacheDirectory = kerbalPath + @"\ModCache";
+           // var modCacheDirectory = kerbalPath + @"\ModCache";
+            var modCacheDirectory =  @"ModCache";
 
+            Directory.SetCurrentDirectory(kerbalPath);
 
             _PackageRepository = PackageRepositoryFactory.Default.CreateRepository(serverUrl);
            
-            //_PackageManager = new PackageManager(
-            //    _PackageRepository,
-            //    new DefaultPackagePathResolver(serverUrl),
-            //    new PhysicalFileSystem(kerbalPath + @"\test"),
-            //    new SharedPackageRepository(kerbalPath + @"\GameData")
-            //);
             var localPackageRepository = new LocalPackageRepository(modCacheDirectory);
             
-            var project = new KerbalProjectSystem(kerbalPath);
+            var project = new KerbalProjectSystem("");
             _ProjectManager = new ProjectManager(_PackageRepository,
                 new DefaultPackagePathResolver(serverUrl),
                 project,
                 localPackageRepository);
 
-            //_PackageManager = new PackageManager(_PackageRepository, kerbalPath + @"\GameData", project, localPackageRepository);
-            _PackageManager = new PackageManager(_PackageRepository,new DefaultPackagePathResolver(serverUrl), project, localPackageRepository);
+            _PackageManager = new PackageManager(_PackageRepository, new DefaultPackagePathResolver(serverUrl), project, localPackageRepository);
 
             if (!Directory.Exists(modCacheDirectory))
             {
@@ -73,14 +67,10 @@ namespace KerbalWinDownloader
         private void btnInstall_Click(object sender, EventArgs e)
         {
             var package = lstAvailableMods.SelectedItem as IPackage;
-            //packageManager.InstallPackage(package, true, true);
-            //_PackageManager.LocalRepository.
             var existingPackages = _ProjectManager.LocalRepository.FindPackagesById(package.Id);
             if (existingPackages.Any())
                 _ProjectManager.RemovePackageReference(package, true, false);
-                //_ProjectManager.UninstallPackage(package.Id);
-            
-            //_PackageManager.InstallPackage(package, true, true);
+
             _ProjectManager.AddPackageReference(package, false, true);
             
 
@@ -90,7 +80,6 @@ namespace KerbalWinDownloader
         private void btnUninstall_Click(object sender, EventArgs e)
         {
             var package = lstInstalledMods.SelectedItem as IPackage;
-            //_ProjectManager.UninstallPackage(lstInstalledMods.SelectedItem as IPackage);
             _ProjectManager.RemovePackageReference(package, true, false);
             RefreshModLists();
         }
@@ -100,7 +89,8 @@ namespace KerbalWinDownloader
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
             {
                 txtKerbalPath.Text = folderBrowserDialog1.SelectedPath;
-
+                Directory.SetCurrentDirectory(folderBrowserDialog1.SelectedPath);
+                RefreshModLists();
             }
         }
 
@@ -126,7 +116,7 @@ namespace KerbalWinDownloader
             var package = lstInstalledMods.SelectedItem as IPackage;
             var foundPackage = _PackageRepository.FindPackage(package.Id);
             _PackageManager.UpdatePackage(package.Id, foundPackage.Version, true, true);
-            //_PackageManager.UpdatePackage(package.Id, true, true);
+
             RefreshModLists();
         }
     }
