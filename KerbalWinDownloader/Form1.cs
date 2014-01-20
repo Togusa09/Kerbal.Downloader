@@ -41,12 +41,16 @@ namespace KerbalWinDownloader
             //    new PhysicalFileSystem(kerbalPath + @"\test"),
             //    new SharedPackageRepository(kerbalPath + @"\GameData")
             //);
-            _PackageManager = new PackageManager(_PackageRepository, kerbalPath + @"\GameData");
-
+            var localPackageRepository = new LocalPackageRepository(modCacheDirectory);
+            
+            var project = new KerbalProjectSystem(kerbalPath);
             _ProjectManager = new ProjectManager(_PackageRepository,
                 new DefaultPackagePathResolver(serverUrl),
-                new KerbalProjectSystem(kerbalPath),
-                new LocalPackageRepository(modCacheDirectory));
+                project,
+                localPackageRepository);
+
+            //_PackageManager = new PackageManager(_PackageRepository, kerbalPath + @"\GameData", project, localPackageRepository);
+            _PackageManager = new PackageManager(_PackageRepository,new DefaultPackagePathResolver(serverUrl), project, localPackageRepository);
 
             if (!Directory.Exists(modCacheDirectory))
             {

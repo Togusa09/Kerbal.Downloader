@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace KerbalWinDownloader
@@ -15,7 +16,9 @@ namespace KerbalWinDownloader
         public KerbalProjectSystem(string kerbalDirectory)
             : base(Path.Combine(kerbalDirectory, "Gamedata"))
         {
+            
             _KerbalDirectory = kerbalDirectory;
+            Directory.SetCurrentDirectory(_KerbalDirectory);
         }
 
         public string ProjectName
@@ -25,7 +28,7 @@ namespace KerbalWinDownloader
 
         public string ResolvePath(string path)
         {
-            return Path.Combine(_KerbalDirectory, "GameData",  path);
+            return Path.Combine( "GameData",  path);
         }
 
         public System.Runtime.Versioning.FrameworkName TargetFramework
